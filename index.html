@@ -932,7 +932,11 @@ function cardHTML(group){
   </button>
   <div class="card-body">
     <div class="card-title">${esc(b.신청제목||'(제목 없음)')}</div>
-    <div class="card-meta">${esc(b.강사||'')} <span style="color:var(--border);margin:0 6px">|</span> ID ${sid}</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+      <span style="font-size:17px;font-weight:700;color:var(--text-main)">${esc(b.강사||'')}</span>
+      <span style="color:var(--border)">|</span>
+      <span style="font-size:17px;font-weight:700;color:var(--teal-deep)">ID ${sid}</span>
+    </div>
     <div class="badges" style="margin-bottom:12px">
       <span class="badge b-teal">신청 ${totalQty}권</span>
       ${classList?`<span class="badge b-gray">${esc(classList)}</span>`:''}
