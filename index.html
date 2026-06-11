@@ -141,6 +141,10 @@ body{
   border-color:var(--danger);
   background:#fffcfb;
 }
+.card.is-type-m{
+  background:#FFFBF0;
+  border-color:#FFCC80;
+}
 
 /* Check Button */
 .chk{
@@ -917,10 +921,13 @@ function cardHTML(group){
   const sid=String(b.신청ID||b.id);
   // 합산 수량
   const totalQty=group.reduce((s,x)=>s+(x.수량||0),0);
-  // 반이름 목록
-  const classList=[...new Set(group.map(x=>x.반이름||x.반코드||'').filter(Boolean))].join(' · ');
+  // 예상 묶음수
+  const pages=b.권당페이지수||0;
+  const bundles=pages>0?Math.ceil(totalQty*pages/4000):null;
+  // 타입 M 여부
+  const isTypeM=(b.타입||'').trim().toUpperCase()==='M';
   const confirmed=group.every(x=>x.입고확인);
-  const cardCls=confirmed?'is-confirmed':'';
+  const cardCls=confirmed?'is-confirmed':isTypeM?'is-type-m':'';
   const chkCls=confirmed?'on':'';
 
   return `
@@ -937,7 +944,10 @@ function cardHTML(group){
     </div>
     <div class="badges" style="margin-bottom:12px">
       <span class="badge b-teal">신청 ${totalQty}권</span>
-      ${classList?`<span class="badge b-gray">${esc(classList)}</span>`:''}
+      ${bundles!==null
+        ?`<span class="badge b-gold">📦 예상 ${bundles}묶음</span>`
+        :`<span class="badge b-gray">묶음수 미계산</span>`}
+      ${isTypeM?`<span class="badge" style="background:#FFF3E0;color:#E65100;border:1px solid #FFCC80;font-weight:900;">M타입</span>`:''}
     </div>
     <div class="irow">
       <span class="ilabel">비고</span>
