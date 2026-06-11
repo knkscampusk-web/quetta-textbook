@@ -491,9 +491,8 @@ body{
   .rtable th:nth-child(3),.rtable td:nth-child(3){width:auto!important;overflow:hidden!important;}
   .rtable th:nth-child(4),.rtable td:nth-child(4){width:44px!important;white-space:nowrap!important;}
   .rtable th:nth-child(5),.rtable td:nth-child(5){width:38px!important;text-align:right!important;white-space:nowrap!important;}
-  .rtable th:nth-child(6),.rtable td:nth-child(6){width:38px!important;text-align:right!important;white-space:nowrap!important;}
-  .rtable th:nth-child(7),.rtable td:nth-child(7){width:38px!important;text-align:right!important;white-space:nowrap!important;}
-  .rtable th:nth-child(8),.rtable td:nth-child(8){width:80px!important;}
+  .rtable th:nth-child(6),.rtable td:nth-child(6){width:48px!important;text-align:right!important;white-space:nowrap!important;}
+  .rtable th:nth-child(7),.rtable td:nth-child(7){width:80px!important;}
   .rtable input{
     border:none!important;
     font-size:10px!important;
@@ -587,8 +586,7 @@ body{
         <th>교재명</th>
         <th>강사</th>
         <th style="text-align:right">신청</th>
-        <th style="text-align:right">실입고</th>
-        <th style="text-align:right">부족</th>
+        <th style="text-align:right">묶음수</th>
         <th>비고</th>
       </tr>
     </thead>
@@ -1188,17 +1186,19 @@ function renderReceipt(){
   });
   document.getElementById('rcptCount').innerHTML=`${done.length}<span>확인 건수</span>`;
   document.getElementById('rcptBody').innerHTML=done.map((b,i)=>{
-    const actual=b.실입고수량!==undefined?b.실입고수량:b.수량||0;
-    const shortage=Math.max(0,(b.수량||0)-actual);
-    const noteStr=b.비고||(shortage>0?`${shortage}부 부족`:'');
+    const qty=b.수량||0;
+    const pages=b.권당페이지수||0;
+    const bundles=pages>0?Math.ceil(qty*pages/4000):null;
+    const bundleStr=bundles!==null?`${bundles}묶음`:'—';
+    const bundleTitle=pages>0?`${qty}권 × ${pages}P ÷ 4000P`:'';
+    const noteStr=b.비고||'';
     return `<tr>
       <td style="color:var(--text-sub)">${i+1}</td>
       <td style="color:var(--text-sub);font-size:13px">${esc(String(b.신청ID||b.id||''))}</td>
       <td style="max-width:0"><strong style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.신청제목||'')}</strong></td>
       <td>${esc(b.강사||'')}</td>
-      <td style="text-align:right">${b.수량||0}</td>
-      <td style="text-align:right">${actual}</td>
-      <td style="text-align:right" class="${shortage>0?'shortage-cell':''}">${shortage>0?shortage:'—'}</td>
+      <td style="text-align:right">${qty}</td>
+      <td style="text-align:right;font-weight:700;color:${bundles!==null?'var(--teal-deep)':'#999'}" title="${bundleTitle}">${bundleStr}</td>
       <td><input type="text" value="${esc(noteStr)}" style="border:none;width:100%;font-size:14px;font-family:inherit;color:var(--text-main);background:transparent;padding:2px 4px;outline:none;" placeholder="—" onchange="updateRcptNote('${b.id}',this.value)"></td>
     </tr>`;
   }).join('');
